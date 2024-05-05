@@ -1,21 +1,32 @@
 import { ChatSidebar } from "components/ChatSidebar";
+import { Message } from "components/Message";
 import Head from "next/head";
 import { streamReader } from "openai-edge-stream";
 import { useState } from "react";
+import {v4 as uuid} from "uuid";
 
 export default function ChatPage() {
     const [incomingMessage, setIncomingMessage] = useState("");
     const [messageText, setMessageText] = useState("");
+    const [newChatMessages, setNewChatMessages] = useState([]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setNewChatMessages(prev => {
+            const newChatMessages = [...prev, {
+                _id:uuid(),
+                role: "user",
+                content: messageText,
+            }];
+            return newChatMessages;
+        })
         console.log("Message Text: ",messageText);
         const response = await fetch(`/api/chat/sendMessage`, {
             method: "POST",
             headers: {
                 'content-type': 'application/json',
             },
-            body: JSON.stringify({message: messageText}),
+            body: JSON.stringify({ message: messageText }),
         });
         const data = response.body;
         if(!data){
@@ -38,7 +49,17 @@ export default function ChatPage() {
                 <ChatSidebar />
                 <div className="bg-gray-700 flex flex-col">
                     <div className="flex-1 text-white">
-                        {incomingMessage}
+                        {newChatMessages.map(message => (
+                            <Message 
+                                key={message._id} 
+                                role={message.role} 
+                                content={message.content} />
+                        ))}
+                        {!!incomingMessage && (
+                            <Message 
+                                role="assistant"
+                                content={incomingMessage} />
+                        )}
                     </div>
                     <footer className="bg-gray-800 p-10">
                         <form onSubmit={handleSubmit}>
