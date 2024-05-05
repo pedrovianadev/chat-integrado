@@ -2,11 +2,19 @@ import Head from "next/head";
 
 export default function Home() {
     return (
-        <div>
+        <>
             <Head>
-                <title>Next JS ChatGPT Starter</title>
+                <title>Next Chat</title>
             </Head>
-            <h1>Welcome to the Chat</h1>
-        </div>
+            <div className="grid h-screen grid-cols-[260px_1fr]">
+                <div>
+                    Sidebar
+                </div>
+                <div className="bg-gray-700 flex flex-col">
+                    <div className="flex-1">chat window</div>
+                    <footer className="bg-gray-800 p-10">footer</footer>
+                </div>
+            </div>
+        </>
     );
 }
